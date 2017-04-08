@@ -1,0 +1,12 @@
+# site specific settings
+/roundrobin/settings_local.py
+
+# https certificate/key
+/docker/nginx/ssl/server.cert
+/docker/nginx/ssl/server.key
+
+# admin static files
+/static/
+
+*.py[co]
+__pycache__
