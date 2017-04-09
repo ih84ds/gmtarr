@@ -1,0 +1,19 @@
+# This overrides file is for the dev environment.
+version: "2"
+services:
+  db:
+    image: "mysql:5.7"
+    # store in persistent docker volume for dev
+    volumes:
+      - "mysql_data:/var/lib/mysql"
+  django:
+    build: django
+    # use django builtin server for dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - "..:/usr/src/app"
+    depends_on:
+      - db
+volumes:
+  mysql_data:

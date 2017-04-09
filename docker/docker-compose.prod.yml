@@ -1,0 +1,28 @@
+version: "2"
+services:
+  db:
+    image: "mysql:5.7"
+    volumes:
+      # use persistent volume on host
+      - "/app/mysqldata:/var/lib/mysql"
+  django:
+    build: django
+    # use uwsgi for prod
+    command: "uwsgi --socket :8001 --module roundrobin.wsgi"
+    volumes:
+      - "..:/usr/src/app"
+    depends_on:
+      - db
+  # use nginx server for prod
+  web:
+    image: "nginx:1.11"
+    ports:
+      # open the actual web ports
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./nginx/conf.d:/etc/nginx/conf.d"
+      - "./nginx/ssl:/etc/nginx/ssl"
+      - "..:/usr/src/app"
+    depends_on:
+      - django
