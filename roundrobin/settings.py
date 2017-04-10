@@ -27,6 +27,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'api',
+    'waauth',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,6 +56,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'waauth.context_processors.waauth',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -99,13 +102,28 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'waauth.backend.WAAuthBackend',
+)
+
+# 
+LOGIN_URL = 'authenticate'
+
+WA_API_URL = 'https://api.wildapricot.org/v2'
+WA_OAUTH_LOGIN_URL = 'https://www.gmtatennis.org/sys/login/OAuthLogin'
+WA_TOKEN_URL = 'https://oauth.wildapricot.org/auth/token'
+WA_JOIN_URL = 'https://www.gmtatennis.org/join-us'
+WA_CLIENT_ID = 'roundrobin'
+WA_SCOPE = 'contacts_me'
+WA_CLIENT_SECRET = '' # set in settings_local
+WA_API_KEY = '' # set in settings_local
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Chicago'
 
 USE_I18N = True
 
