@@ -3,3 +3,4 @@ mysqlclient
 uwsgi
 requests
 djangorestframework
+djangorestframework-jwt
