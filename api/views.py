@@ -3,8 +3,9 @@ from django.contrib.auth.decorators import login_required
 
 from rest_framework_jwt.settings import api_settings
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 # Custom
 from waauth import utils
@@ -27,6 +28,7 @@ def auth_token(request, *args, **kwargs):
     return Response(data)
 
 @api_view(['GET'])
+@permission_classes((IsAdminUser, ))
 def event_registrants(request, event_id):
     # this is somewhat hacky as it requests a new token every time
     # FIXME: api auth token in session and refresh as necessary?
