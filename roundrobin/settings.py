@@ -86,6 +86,7 @@ DATABASES = {
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
+        # require authentication to use API by default
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -128,6 +129,7 @@ WA_CLIENT_ID = 'roundrobin'
 WA_SCOPE = 'contacts_me'
 WA_CLIENT_SECRET = '' # set in settings_local
 WA_API_KEY = '' # set in settings_local
+WA_ACCOUNT_ID = '' # set in settings_local
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

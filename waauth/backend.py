@@ -37,7 +37,7 @@ class WAAuthBackend:
         except Exception as e:
             request.session['token'] = token
             return None
-        contact_info = utils.get_contact_info(account_id, access_token)
+        contact_info = utils.get_contact_info(access_token, account_id)
 
         try:
             wa_user = WAUser.objects.get(wa_id=account_id)
