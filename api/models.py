@@ -14,8 +14,9 @@ class Flight(models.Model):
         return self.name
 
 class Player(models.Model):
-    MALE = 1
-    FEMALE = 2
+    # this is sort of a hack but makes life much easier due to not having to translate.
+    MALE = 'male'
+    FEMALE = 'female'
     Genders = (
         (MALE, 'male'),
         (FEMALE, 'female'),
@@ -24,22 +25,11 @@ class Player(models.Model):
     name = models.CharField(max_length=63, db_index=True)
     email = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=31, blank=True, null=True)
-    gender = models.IntegerField(choices=Genders, blank=True, null=True)
+    gender = models.CharField(max_length=31, choices=Genders, blank=True, null=True)
     users = models.ManyToManyField(User, related_name='players')
     flights = models.ManyToManyField(Flight, related_name='players')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    @classmethod
-    def get_gender_from_string(cls, gender_str):
-        if gender_str.lower() == 'm':
-            gender_str = 'male'
-        if gender_str.lower() == 'f':
-            gender_str = 'female'
-        for g in cls.Genders:
-            if g[1] == gender_str:
-                return g[0]
-        return None
 
     def __str__(self):
         return self.name
