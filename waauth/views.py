@@ -7,6 +7,7 @@ import urllib, json
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
 from django.template import RequestContext
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib.auth import login, logout, authenticate
@@ -37,7 +38,7 @@ def authenticate_view(request):
                 return HttpResponseRedirect(return_uri)
         
         else:
-            return HttpResponseRedirect(reverse('register'))
+            raise PermissionDenied
     else:
         if request.GET.get('ignorereferer') != '1':
             referer = request.META.get('HTTP_REFERER')

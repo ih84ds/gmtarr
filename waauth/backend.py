@@ -35,7 +35,6 @@ class WAAuthBackend:
             refresh_token = token['refresh_token']
             account_id = token['Permissions'][0]['AccountId']
         except Exception as e:
-            request.session['token'] = token
             return None
         contact_info = utils.get_contact_info(access_token, account_id)
 
@@ -49,6 +48,10 @@ class WAAuthBackend:
             except Exception as e:
                 user = User()
             wa_user = WAUser(wa_id=account_id)
+
+        # make sure user was not deactivated
+        if not user.is_active:
+            return None
 
         # update user info every time they authenticate so it stays in sync.
         user.username = contact_info['Email']
