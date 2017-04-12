@@ -1,9 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Flight(models.Model):
     name = models.CharField(max_length=63, db_index=True)
     year = models.IntegerField(db_index=True)
+    ntrp = models.CharField(max_length=31, blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -19,8 +22,10 @@ class Player(models.Model):
     )
 
     name = models.CharField(max_length=63, db_index=True)
+    email = models.CharField(max_length=255, blank=True, null=True)
+    phone = models.CharField(max_length=31, blank=True, null=True)
     gender = models.IntegerField(choices=Genders, blank=True, null=True)
-    rating = models.DecimalField(max_digits=3, decimal_places=2)
+    users = models.ManyToManyField(User, related_name='players')
     flights = models.ManyToManyField(Flight, related_name='players')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
