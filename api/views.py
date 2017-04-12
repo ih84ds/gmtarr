@@ -5,17 +5,19 @@ from rest_framework_jwt.settings import api_settings
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 # Custom
 from waauth import utils
 
-@login_required(redirect_field_name="redirect_uri")
-def index(request, *args, **kwargs):
-    return HttpResponse('Secret contents!', status=200)
-
-@login_required(redirect_field_name="redirect_uri")
 @api_view(['GET'])
+@permission_classes((AllowAny, ))
+def index(request, *args, **kwargs):
+    return Response({ 'msg': 'Hi. Welcome to the GMTA Round Robin API server.' })
+
+@login_required()
+@api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
 def auth_token(request, *args, **kwargs):
     jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
     jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER

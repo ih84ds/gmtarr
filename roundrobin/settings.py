@@ -120,6 +120,7 @@ AUTHENTICATION_BACKENDS = (
 
 # 
 LOGIN_URL = 'authenticate'
+LOGOUT_REDIRECT_URL = 'https://www.gmtatennis.org/'
 
 WA_API_URL = 'https://api.wildapricot.org/v2'
 WA_OAUTH_LOGIN_URL = 'https://www.gmtatennis.org/sys/login/OAuthLogin'
