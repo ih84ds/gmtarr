@@ -45,6 +45,66 @@ def event_registrants(request, event_id):
     registrants = utils.get_rr_event_registrants(access_token, event_id)
     return Response(registrants)
 
+# League Views
+class LeagueList(generics.ListAPIView):
+    """Gets list of all Leagues."""
+    queryset = League.objects.all()
+    serializer_class = LeagueSerializer
+
+class LeagueDetail(generics.RetrieveAPIView):
+    """Gets details for the specified League."""
+    queryset = League.objects.all()
+    serializer_class = LeagueSerializer
+
+class LeagueFlightList(generics.ListAPIView):
+    """Gets list of all Flights in the given league."""
+    serializer_class = FlightSerializer
+
+    def get_league(self):
+        try:
+            league = self.get_league_queryset().get()
+        except:
+            league = None
+        return league
+
+    def get_league_queryset(self):
+        return League.objects.filter(pk=self.kwargs['league_id'])
+
+    def get_queryset(self):
+        league = self.get_league()
+        if not league:
+            return None
+        q = Flight.objects.filter(league=league)
+        return q
+
+class LeaguePlayerList(generics.ListAPIView):
+    """Gets list of all Players in the given league."""
+
+    def get_league(self):
+        try:
+            league = self.get_league_queryset().get()
+        except:
+            league = None
+        return league
+
+    def get_league_queryset(self):
+        return League.objects.filter(pk=self.kwargs['league_id'])
+
+    def get_queryset(self):
+        league = self.get_league()
+        if not league:
+            return None
+        q = Player.objects.filter(league=league)
+        return q
+
+    def get_serializer_class(self):
+        user = self.request.user
+        is_in_league = self.get_league_queryset().filter(players__user=user).count() > 0
+        if is_in_league or user.is_staff:
+            return PlayerSerializer
+        else:
+            return PlayerPublicSerializer
+
 # Flight Views
 class FlightList(generics.ListAPIView):
     """Gets list of all Flights."""
@@ -56,7 +116,6 @@ class FlightDetail(generics.RetrieveAPIView):
     queryset = Flight.objects.all()
     serializer_class = FlightSerializer
 
-# Flight Views
 class FlightPlayerList(generics.ListAPIView):
     """Gets list of all Players in the given flight."""
 

@@ -8,6 +8,12 @@ urlpatterns = [
     url(r'^auth-token$', views.auth_token, name='auth_token'),
     url(r'^refresh-token$', refresh_jwt_token, name='refresh_token'),
 
+    # League Routes
+    url(r'^leagues$', views.LeagueList.as_view(), name='league_list'),
+    url(r'^leagues/(?P<pk>[0-9]+)$', views.LeagueDetail.as_view(), name='league_detail'),
+    url(r'^leagues/(?P<league_id>[0-9]+)/flights$', views.LeagueFlightList.as_view(), name='league_flight_list'),
+    url(r'^leagues/(?P<league_id>[0-9]+)/players$', views.LeaguePlayerList.as_view(), name='league_player_list'),
+
     # Flight Routes
     url(r'^flights$', views.FlightList.as_view(), name='flight_list'),
     url(r'^flights/(?P<pk>[0-9]+)$', views.FlightDetail.as_view(), name='flight_detail'),
