@@ -53,7 +53,7 @@ class Player(models.Model):
     # player NTRP is the level the user registered for. Doesn't necessarily match Flight ntrp.
     ntrp = models.CharField(max_length=31, blank=True, null=True)
     user = models.ForeignKey(User, related_name='players', on_delete=models.CASCADE)
-    flight = models.ForeignKey(Flight, related_name='players', on_delete=models.CASCADE, blank=True, null=True)
+    flight = models.ForeignKey(Flight, related_name='players', on_delete=models.SET_NULL, blank=True, null=True)
     league = models.ForeignKey(League, related_name='players', on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
