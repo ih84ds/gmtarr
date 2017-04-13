@@ -16,6 +16,7 @@ urlpatterns = [
 
     # Flight Routes
     url(r'^flights$', views.FlightList.as_view(), name='flight_list'),
+    url(r'^flights/create$', views.FlightCreate.as_view(), name='flight_create'),
     url(r'^flights/(?P<pk>[0-9]+)$', views.FlightDetail.as_view(), name='flight_detail'),
     url(r'^flights/(?P<flight_id>[0-9]+)/players$', views.FlightPlayerList.as_view(), name='flight_player_list'),
 

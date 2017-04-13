@@ -116,6 +116,12 @@ class FlightDetail(generics.RetrieveAPIView):
     queryset = Flight.objects.all()
     serializer_class = FlightSerializer
 
+class FlightCreate(generics.CreateAPIView):
+    """Creates a new Flight."""
+    permission_classes = (IsAdminUser,)
+    queryset = Flight.objects.all()
+    serializer_class = FlightSerializer
+
 class FlightPlayerList(generics.ListAPIView):
     """Gets list of all Players in the given flight."""
 
