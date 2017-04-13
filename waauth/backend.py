@@ -33,41 +33,20 @@ class WAAuthBackend:
         try:
             access_token = token['access_token']
             refresh_token = token['refresh_token']
-            account_id = token['Permissions'][0]['AccountId']
         except Exception as e:
-            return None
-        contact_info = utils.get_contact_info(access_token, account_id)
-
-        try:
-            wa_user = WAUser.objects.get(wa_id=account_id)
-            user = wa_user.user
-        except WAUser.DoesNotExist:
-            # insert new user into the db
-            try:
-                user = User.objects.get(username=contact_info['Email'])
-            except Exception as e:
-                user = User()
-            wa_user = WAUser(wa_id=account_id)
-
-        # make sure user was not deactivated
-        if not user.is_active:
             return None
 
         # update user info every time they authenticate so it stays in sync.
-        user.username = contact_info['Email']
-        user.email = contact_info['Email']
-        user.first_name = contact_info['FirstName']
-        user.last_name = contact_info['LastName']
-        user.save()
-
-        # set user in case it's a new object
-        # (in which case we couldn't set it earlier because it doesn't get an id until save.)
-        wa_user.user = user
+        wa_user = utils.get_wa_user_for_account('me', token=access_token, create=True, update=True)
+        # make sure user was not deactivated
+        if (not wa_user) or (not wa_user.user.is_active):
+            return None
+        # set access and refresh tokens
         wa_user.access_token = access_token
         wa_user.refresh_token = refresh_token
         wa_user.save()
 
-        return user
+        return wa_user.user
     
     def get_user(self, user_id):
         try:

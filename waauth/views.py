@@ -53,6 +53,6 @@ def logout_view(request):
 
 def test_view(request):
     user = WAUser.objects.get(user=request.user)
-    profile = utils.get_contact_info(user.access_token, user.wa_id)
+    profile = utils.get_contact_info(user.access_token)
     return HttpResponse(json.dumps(profile))
     
