@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 
 from rest_framework_jwt.settings import api_settings
 from rest_framework import status
+from rest_framework.compat import is_authenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
@@ -10,6 +11,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 # Custom
 from waauth import utils
 from api.models import *
+from api.permissions import IsAdminUserOrReadOnly, IsAdminUserOrReadOnlyAuthenticated
 from api.serializers import *
 from rest_framework import generics
 
@@ -46,19 +48,22 @@ def event_registrants(request, event_id):
     return Response(registrants)
 
 # League Views
-class LeagueList(generics.ListAPIView):
+class LeagueListCreate(generics.ListCreateAPIView):
     """Gets list of all Leagues."""
     queryset = League.objects.all()
     serializer_class = LeagueSerializer
+    permission_classes = (IsAdminUserOrReadOnly,)
 
-class LeagueDetail(generics.RetrieveAPIView):
+class LeagueRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     """Gets details for the specified League."""
     queryset = League.objects.all()
     serializer_class = LeagueSerializer
+    permission_classes = (AllowAny,)
 
 class LeagueFlightList(generics.ListAPIView):
-    """Gets list of all Flights in the given league."""
+    """Gets list of all Flights in the given League."""
     serializer_class = FlightSerializer
+    permission_classes = (AllowAny,)
 
     def get_league(self):
         try:
@@ -78,7 +83,8 @@ class LeagueFlightList(generics.ListAPIView):
         return q
 
 class LeaguePlayerList(generics.ListAPIView):
-    """Gets list of all Players in the given league."""
+    """Gets list of all Players in the given League."""
+    permission_classes = (AllowAny,)
 
     def get_league(self):
         try:
@@ -99,31 +105,28 @@ class LeaguePlayerList(generics.ListAPIView):
 
     def get_serializer_class(self):
         user = self.request.user
-        is_in_league = self.get_league_queryset().filter(players__user=user).count() > 0
+        is_in_league = is_authenticated(user) and self.get_league_queryset().filter(players__user=user).count() > 0
         if is_in_league or user.is_staff:
             return PlayerSerializer
         else:
             return PlayerPublicSerializer
 
 # Flight Views
-class FlightList(generics.ListAPIView):
+class FlightListCreate(generics.ListCreateAPIView):
     """Gets list of all Flights."""
     queryset = Flight.objects.all()
     serializer_class = FlightSerializer
+    permission_classes = (IsAdminUserOrReadOnly,)
 
-class FlightDetail(generics.RetrieveAPIView):
+class FlightRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     """Gets details for the specified Flight."""
     queryset = Flight.objects.all()
     serializer_class = FlightSerializer
-
-class FlightCreate(generics.CreateAPIView):
-    """Creates a new Flight."""
-    permission_classes = (IsAdminUser,)
-    queryset = Flight.objects.all()
-    serializer_class = FlightSerializer
+    permission_classes = (IsAdminUserOrReadOnly,)
 
 class FlightPlayerList(generics.ListAPIView):
-    """Gets list of all Players in the given flight."""
+    """Gets list of all Players in the given Flight."""
+    permission_classes = (AllowAny,)
 
     def get_flight(self):
         try:
@@ -144,7 +147,7 @@ class FlightPlayerList(generics.ListAPIView):
 
     def get_serializer_class(self):
         user = self.request.user
-        is_in_flight = self.get_flight_queryset().filter(players__user=user).count() > 0
+        is_in_flight = is_authenticated(user) and self.get_flight_queryset().filter(players__user=user).count() > 0
         if is_in_flight or user.is_staff:
             return PlayerSerializer
         else:
@@ -152,15 +155,16 @@ class FlightPlayerList(generics.ListAPIView):
 
 
 # Player Views
-class PlayerList(generics.ListAPIView):
+class PlayerListCreate(generics.ListCreateAPIView):
     """Gets info for all players. Only admins can do this."""
     permission_classes = (IsAdminUser,)
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
 
-class PlayerDetail(generics.RetrieveUpdateAPIView):
-    """Gets or Updates info for specified player."""
+class PlayerRetrieveUpdate(generics.RetrieveUpdateAPIView):
+    """Gets or Updates info for specified Player."""
     serializer_class = PlayerSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         q = Player.objects.all()
@@ -169,3 +173,9 @@ class PlayerDetail(generics.RetrieveUpdateAPIView):
         if not user.is_staff:
             q = q.filter(user=user)
         return q
+
+class PlayerDestroy(generics.DestroyAPIView):
+    """Deletes a player. Only admins can do this."""
+    permission_classes = (IsAdminUser,)
+    queryset = Player.objects.all()
+    serializer_class = PlayerSerializer
