@@ -1,8 +1,26 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
+class League(models.Model):
+    """Used to group all players who signed up for a Round Robin event/season.
+    
+    This class is used to present a list of players to divide up
+    into flights. It also groups those flights together after they are created.
+    """
+    name = models.CharField(max_length=63, db_index=True)
+    # WA Event id
+    event_id = models.CharField(max_length=63, db_index=True)
+    year = models.IntegerField(db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name    
+
 class Flight(models.Model):
+    """Represents a single grouping of players/matches for the Round Robin.
+    """
+    league = models.ForeignKey(League, related_name='flights', on_delete=models.CASCADE)
     name = models.CharField(max_length=63, db_index=True)
     year = models.IntegerField(db_index=True)
     ntrp = models.CharField(max_length=31, blank=True, null=True)
@@ -14,6 +32,12 @@ class Flight(models.Model):
         return self.name
 
 class Player(models.Model):
+    """Represents a player in a league/flight.
+
+    This holds the contact info for the player and also maps them to flights/matches
+    for their leagues. Note that a Player is not a one-to-one mapping with a human.
+    There will be a new Player entry for each separate event registration by a User.
+    """
     # this is sort of a hack but makes life much easier due to not having to translate.
     MALE = 'male'
     FEMALE = 'female'
@@ -26,8 +50,11 @@ class Player(models.Model):
     email = models.CharField(max_length=255, blank=True, null=True)
     phone = models.CharField(max_length=31, blank=True, null=True)
     gender = models.CharField(max_length=31, choices=Genders, blank=True, null=True)
-    users = models.ManyToManyField(User, related_name='players')
-    flights = models.ManyToManyField(Flight, related_name='players')
+    # player NTRP is the level the user registered for. Doesn't necessarily match Flight ntrp.
+    ntrp = models.CharField(max_length=31, blank=True, null=True)
+    user = models.ForeignKey(User, related_name='players', on_delete=models.CASCADE)
+    flight = models.ForeignKey(Flight, related_name='players', on_delete=models.CASCADE, blank=True, null=True)
+    league = models.ForeignKey(League, related_name='players', on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -35,6 +62,8 @@ class Player(models.Model):
         return self.name
 
 class Match(models.Model):
+    """Represents a single match between two players in the same flight.
+    """
     HOME = 1
     VISITOR = 2
     DBL_DEFAULT = 3
@@ -99,5 +128,3 @@ class Match(models.Model):
         elif self.winner == self.VISITOR:
             return player == self.visitor_player
         return None
-
-

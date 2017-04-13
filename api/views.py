@@ -74,12 +74,12 @@ class FlightPlayerList(generics.ListAPIView):
         flight = self.get_flight()
         if not flight:
             return None
-        q = Player.objects.filter(flights=flight)
+        q = Player.objects.filter(flight=flight)
         return q
 
     def get_serializer_class(self):
         user = self.request.user
-        is_in_flight = self.get_flight_queryset().filter(players__users=user).count() > 0
+        is_in_flight = self.get_flight_queryset().filter(players__user=user).count() > 0
         if is_in_flight or user.is_staff:
             return PlayerSerializer
         else:
@@ -102,5 +102,5 @@ class PlayerDetail(generics.RetrieveUpdateAPIView):
         user = self.request.user
         # limit to self if not admin
         if not user.is_staff:
-            q = q.filter(users=user)
+            q = q.filter(user=user)
         return q
