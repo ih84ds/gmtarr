@@ -59,7 +59,7 @@ def generate_matches_for_flight(flight, match_timedelta=None):
 def import_players_for_event(event_id, league_name=None):
     try:
         league = League.objects.get(event_id=event_id)
-    except Exception as e:
+    except League.DoesNotExist as e:
         league = League(event_id=event_id)
         league.year = datetime.date.today().year
         if league_name is None:

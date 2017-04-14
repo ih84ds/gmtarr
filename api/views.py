@@ -105,7 +105,7 @@ class LeaguePlayerList(generics.ListAPIView):
 
     def get_serializer_class(self):
         user = self.request.user
-        is_in_league = is_authenticated(user) and self.get_league_queryset().filter(players__user=user).count() > 0
+        is_in_league = is_authenticated(user) and self.get_league_queryset().filter(players__user=user).exists()
         if is_in_league or user.is_staff:
             return PlayerSerializer
         else:
@@ -147,7 +147,7 @@ class FlightPlayerList(generics.ListAPIView):
 
     def get_serializer_class(self):
         user = self.request.user
-        is_in_flight = is_authenticated(user) and self.get_flight_queryset().filter(players__user=user).count() > 0
+        is_in_flight = is_authenticated(user) and self.get_flight_queryset().filter(players__user=user).exists()
         if is_in_flight or user.is_staff:
             return PlayerSerializer
         else:
