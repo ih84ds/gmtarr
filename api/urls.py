@@ -18,11 +18,15 @@ urlpatterns = [
     url(r'^flights$', views.FlightListCreate.as_view(), name='flight_list_create'),
     url(r'^flights/(?P<pk>[0-9]+)$', views.FlightRetrieveUpdateDestroy.as_view(), name='flight_retrieve_update_destroy'),
     url(r'^flights/(?P<flight_id>[0-9]+)/players$', views.FlightPlayerList.as_view(), name='flight_player_list'),
+    url(r'^flights/(?P<flight_id>[0-9]+)/matches$', views.FlightMatchList.as_view(), name='flight_match_list'),
 
     # Player Routes
     url(r'^players$', views.PlayerListCreate.as_view(), name='player_list_create'),
     url(r'^players/(?P<pk>[0-9]+)$', views.PlayerRetrieveUpdate.as_view(), name='player_retrieve_update'),
     url(r'^players/(?P<pk>[0-9]+)/delete$', views.PlayerDestroy.as_view(), name='player_destroy'),
+
+    # Match Routes
+    url(r'^matches/(?P<pk>[0-9]+)$', views.MatchRetrieve.as_view(), name='match_retrieve'),
 
     # WA Info Routes
     url(r'^event-registrants/(?P<event_id>[0-9]+)$', views.event_registrants, name='event_registrants'),

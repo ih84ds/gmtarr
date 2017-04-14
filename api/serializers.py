@@ -20,3 +20,12 @@ class LeagueSerializer(serializers.ModelSerializer):
     class Meta:
         model = League
         fields = ('id', 'name', 'year')
+
+class MatchPublicSerializer(serializers.ModelSerializer):
+    flight = FlightSerializer()
+    home_player = PlayerPublicSerializer()
+    visitor_player = PlayerPublicSerializer()
+
+    class Meta:
+        model = Match
+        fields = ('id', 'flight', 'year', 'status', 'home_player', 'visitor_player', 'score', 'winner', 'scheduled_date', 'played_date', 'entry_date')

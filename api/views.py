@@ -153,6 +153,27 @@ class FlightPlayerList(generics.ListAPIView):
         else:
             return PlayerPublicSerializer
 
+class FlightMatchList(generics.ListAPIView):
+    """Gets list of all Matches in the given Flight."""
+    permission_classes = (AllowAny,)
+    serializer_class = MatchPublicSerializer
+
+    def get_flight(self):
+        try:
+            flight = self.get_flight_queryset().get()
+        except:
+            flight = None
+        return flight
+
+    def get_flight_queryset(self):
+        return Flight.objects.filter(pk=self.kwargs['flight_id'])
+
+    def get_queryset(self):
+        flight = self.get_flight()
+        if not flight:
+            return None
+        q = Match.objects.filter(flight=flight)
+        return q
 
 # Player Views
 class PlayerListCreate(generics.ListCreateAPIView):
@@ -179,3 +200,10 @@ class PlayerDestroy(generics.DestroyAPIView):
     permission_classes = (IsAdminUser,)
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+
+# Match Views
+class MatchRetrieve(generics.RetrieveAPIView):
+    """Gets info for specified Match."""
+    permission_classes = (AllowAny,)
+    queryset = Match.objects.all()
+    serializer_class = MatchPublicSerializer
