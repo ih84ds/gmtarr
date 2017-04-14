@@ -37,6 +37,25 @@ def format_phone(phone, format='{}-{}-{}'):
         phone = format.format(m.group(1), m.group(3), m.group(5))
     return phone
 
+def generate_matches_for_flight(flight, match_timedelta=None):
+    players = list(flight.players.all())
+    schedule = create_balanced_round_robin(players)
+    match_date = flight.start_date
+    if not match_timedelta:
+        match_timedelta = datetime.timedelta(weeks=1)
+    for round in schedule:
+        for p1, p2 in round:
+            match = Match()
+            match.flight = flight
+            match.year = flight.year
+            match.home_player = p2
+            match.visitor_player = p1
+            if match_date:
+                match.scheduled_date = match_date
+            match.save()
+        if match_date:
+            match_date += match_timedelta
+
 def import_players_for_event(event_id, league_name=None):
     try:
         league = League.objects.get(event_id=event_id)
