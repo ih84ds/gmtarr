@@ -5,7 +5,7 @@ from api.models import *
 def create_balanced_round_robin(players):
     """ Create a schedule for the players in the list and return it"""
     s = []
-    if len(players) % 2 == 1: players = players + ["BYE"]
+    if len(players) % 2 == 1: players = players + [None]
     # manipulate map (array of indexes for list) instead of list itself
     # this takes advantage of even/odd indexes to determine home vs. away
     n = len(players)
@@ -45,6 +45,8 @@ def generate_matches_for_flight(flight, match_timedelta=None):
         match_timedelta = datetime.timedelta(weeks=1)
     for round in schedule:
         for p1, p2 in round:
+            if not p1 or not p2:
+                continue
             match = Match()
             match.flight = flight
             match.year = flight.year
