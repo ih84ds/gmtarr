@@ -64,9 +64,9 @@ class Player(models.Model):
 class Match(models.Model):
     """Represents a single match between two players in the same flight.
     """
-    HOME = 1
-    VISITOR = 2
-    DBL_DEFAULT = 3
+    HOME = 'home'
+    VISITOR = 'visitor'
+    DBL_DEFAULT = 'double default'
     Winners = (
         (HOME, 'home'),
         (VISITOR, 'visitor'),
@@ -79,7 +79,7 @@ class Match(models.Model):
     home_player = models.ForeignKey(Player, related_name='home_matches', on_delete=models.CASCADE)
     visitor_player = models.ForeignKey(Player, related_name='visitor_matches', on_delete=models.CASCADE)
     score = models.CharField(max_length=63, blank=True, null=True)
-    winner = models.IntegerField(choices=Winners, blank=True, null=True)
+    winner = models.CharField(max_length=31, choices=Winners, blank=True, null=True)
     scheduled_date = models.DateField(blank=True, null=True)
     played_date = models.DateField(blank=True, null=True)
     entry_date = models.DateField(blank=True, null=True)
