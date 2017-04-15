@@ -1,10 +1,15 @@
 from django.conf.urls import url
+from rest_framework.documentation import include_docs_urls
 from rest_framework_jwt.views import refresh_jwt_token
 
 from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^welcome$', views.welcome, name='welcome'),
+    url(r'^docs/', include_docs_urls(title='Round Robin API Documentation')),
+
+    # Token Routes
     url(r'^auth-token$', views.auth_token, name='auth_token'),
     url(r'^refresh-token$', refresh_jwt_token, name='refresh_token'),
 
@@ -29,5 +34,5 @@ urlpatterns = [
     url(r'^matches/(?P<pk>[0-9]+)$', views.MatchRetrieve.as_view(), name='match_retrieve'),
 
     # WA Info Routes
-    url(r'^event-registrants/(?P<event_id>[0-9]+)$', views.event_registrants, name='event_registrants'),
+    # url(r'^event-registrants/(?P<event_id>[0-9]+)$', views.event_registrants, name='event_registrants'),
 ]

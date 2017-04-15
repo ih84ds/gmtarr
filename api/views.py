@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 
 from rest_framework_jwt.settings import api_settings
 from rest_framework import status
@@ -15,9 +16,12 @@ from api.permissions import IsAdminUserOrReadOnly, IsAdminUserOrReadOnlyAuthenti
 from api.serializers import *
 from rest_framework import generics
 
+def index(request):
+    return redirect('welcome')
+
 @api_view(['GET'])
 @permission_classes((AllowAny, ))
-def index(request, *args, **kwargs):
+def welcome(request):
     return Response({ 'msg': 'Hi. Welcome to the GMTA Round Robin API server.' })
 
 @login_required()
