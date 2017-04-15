@@ -4,12 +4,12 @@ from api.models import *
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ('id', 'name', 'email', 'phone', 'gender', 'ntrp', 'flight', 'league')
+        fields = ('id', 'name', 'email', 'phone', 'gender', 'ntrp', 'user', 'flight', 'league')
 
 class PlayerPublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ('id', 'name', 'gender', 'ntrp', 'flight', 'league')
+        fields = ('id', 'name', 'gender', 'ntrp', 'user', 'flight', 'league')
 
 class FlightSerializer(serializers.ModelSerializer):
     class Meta:

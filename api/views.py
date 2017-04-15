@@ -211,6 +211,7 @@ class PlayerListCreate(generics.ListCreateAPIView):
     """
     permission_classes = (IsAdminUserOrReadOnlyAuthenticated,)
     serializer_class = PlayerSerializer
+    filter_fields = ('id', 'user')
 
     def get_queryset(self):
         q = Player.objects.all()

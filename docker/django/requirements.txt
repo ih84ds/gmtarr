@@ -4,6 +4,8 @@ uwsgi
 requests
 djangorestframework
 djangorestframework-jwt
+django-filter
+# for auto docs
 coreapi
 pygments
 markdown
