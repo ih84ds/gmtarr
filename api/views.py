@@ -62,8 +62,12 @@ class LeagueListCreate(generics.ListCreateAPIView):
         q = League.objects.all()
         mine = self.kwargs.get('mine')
         user = self.request.user
-        if mine and is_authenticated(user):
-            q = q.filter(players__user=user)
+        if mine:
+            if is_authenticated(user):
+                q = q.filter(players__user=user)
+            else:
+                # anonymous users don't have any.
+                q = q.none()
         return q
 
 class LeagueRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
@@ -133,8 +137,12 @@ class FlightListCreate(generics.ListCreateAPIView):
         q = Flight.objects.all()
         mine = self.kwargs.get('mine')
         user = self.request.user
-        if mine and is_authenticated(user):
-            q = q.filter(players__user=user)
+        if mine:
+            if is_authenticated(user):
+                q = q.filter(players__user=user)
+            else:
+                # anonymous users don't have any.
+                q = q.none()
         return q
 
 class FlightRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
@@ -208,7 +216,14 @@ class PlayerListCreate(generics.ListCreateAPIView):
         q = Player.objects.all()
         mine = self.kwargs.get('mine')
         user = self.request.user
-        if (not user.is_staff) or (mine and is_authenticated(user)):
+        if mine:
+            if is_authenticated(user):
+                q = q.filter(user=user)
+            else:
+                # anonymous users don't have any.
+                q = q.none()
+        elif not user.is_staff:
+            # non-admin can only list their own players
             q = q.filter(user=user)
         return q
 
