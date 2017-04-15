@@ -15,6 +15,7 @@ class IsAdminUserOrReadOnly(BasePermission):
 class IsAdminUserOrReadOnlyAuthenticated(BasePermission):
     """
     The request is authenticated as an admin user, or is a read-only request.
+    No access for anonymous users.
     """
 
     def has_permission(self, request, view):

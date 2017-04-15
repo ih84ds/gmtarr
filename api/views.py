@@ -53,10 +53,18 @@ def event_registrants(request, event_id):
 
 # League Views
 class LeagueListCreate(generics.ListCreateAPIView):
-    """Gets list of all Leagues."""
-    queryset = League.objects.all()
+    """Gets list of all Leagues.
+    """
     serializer_class = LeagueSerializer
     permission_classes = (IsAdminUserOrReadOnly,)
+
+    def get_queryset(self):
+        q = League.objects.all()
+        mine = self.kwargs.get('mine')
+        user = self.request.user
+        if mine and is_authenticated(user):
+            q = q.filter(players__user=user)
+        return q
 
 class LeagueRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     """Gets details for the specified League."""
@@ -118,9 +126,16 @@ class LeaguePlayerList(generics.ListAPIView):
 # Flight Views
 class FlightListCreate(generics.ListCreateAPIView):
     """Gets list of all Flights."""
-    queryset = Flight.objects.all()
     serializer_class = FlightSerializer
     permission_classes = (IsAdminUserOrReadOnly,)
+
+    def get_queryset(self):
+        q = Flight.objects.all()
+        mine = self.kwargs.get('mine')
+        user = self.request.user
+        if mine and is_authenticated(user):
+            q = q.filter(players__user=user)
+        return q
 
 class FlightRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     """Gets details for the specified Flight."""
@@ -181,13 +196,27 @@ class FlightMatchList(generics.ListAPIView):
 
 # Player Views
 class PlayerListCreate(generics.ListCreateAPIView):
-    """Gets info for all players. Only admins can do this."""
-    permission_classes = (IsAdminUser,)
-    queryset = Player.objects.all()
+    """Gets info for all accessible players.
+
+    If user is an admin and not requesting "mine", returns all players.
+    If user is non-admin or is requesting "mine", returns all players that belong to the current user.
+    """
+    permission_classes = (IsAdminUserOrReadOnlyAuthenticated,)
     serializer_class = PlayerSerializer
 
+    def get_queryset(self):
+        q = Player.objects.all()
+        mine = self.kwargs.get('mine')
+        user = self.request.user
+        if (not user.is_staff) or (mine and is_authenticated(user)):
+            q = q.filter(user=user)
+        return q
+
 class PlayerRetrieveUpdate(generics.RetrieveUpdateAPIView):
-    """Gets or Updates info for specified Player."""
+    """Gets or Updates info for specified Player.
+
+    If user is non-admin, only that user's players can be updated
+    """
     serializer_class = PlayerSerializer
     permission_classes = (IsAuthenticated,)
 
@@ -200,7 +229,10 @@ class PlayerRetrieveUpdate(generics.RetrieveUpdateAPIView):
         return q
 
 class PlayerDestroy(generics.DestroyAPIView):
-    """Deletes a player. Only admins can do this."""
+    """Deletes a player.
+
+    Only admins can do this.
+    """
     permission_classes = (IsAdminUser,)
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
