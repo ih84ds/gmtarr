@@ -51,6 +51,21 @@ def event_registrants(request, event_id):
     registrants = utils.get_rr_event_registrants(access_token, event_id)
     return Response(registrants)
 
+# User Info Views
+@api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
+def userinfo(request):
+    user = request.user
+    data = {
+        'id': user.id,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email,
+        'last_login': user.last_login,
+        'wa_contact_id': user.wa_user and user.wa_user.wa_id
+    }
+    return Response(data)
+
 # League Views
 class LeagueListCreate(generics.ListCreateAPIView):
     """Gets list of all Leagues.

@@ -13,6 +13,9 @@ urlpatterns = [
     url(r'^auth-token$', views.auth_token, name='auth_token'),
     url(r'^refresh-token$', refresh_jwt_token, name='refresh_token'),
 
+    # User Info
+    url(r'^userinfo$', views.userinfo, name='userinfo'),
+
     # League Routes
     url(r'^leagues$', views.LeagueListCreate.as_view(), name='league_list_create'),
     url(r'^leagues/mine$', views.LeagueListCreate.as_view(), {'mine': True}, name='league_list_create'),
