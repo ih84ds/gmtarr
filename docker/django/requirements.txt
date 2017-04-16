@@ -5,6 +5,7 @@ requests
 djangorestframework
 djangorestframework-jwt
 django-filter
+django-cors-headers
 # for auto docs
 coreapi
 pygments
