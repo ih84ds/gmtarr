@@ -11,12 +11,21 @@ from waauth.models import WAUser
 import waauth.utils as utils
 
 class WAAuthBackend:
-    def authenticate(self, token=None, request=None):
+    def authenticate(self, request=None, code=None, redirect_uri=None):
+        """Authenticates a user using an access code retrieved from WA OAuth Login.
+
+        Keyword arguments:
+        request -- the current http request object
+        code -- the code retruned from WA OAuth Login page after redirecting back to the client
+        reirect_uri -- the redirect_uri parameter that was passed to WA login when the code was retrieved
+        """
+        if not redirect_uri:
+            redirect_uri = request.build_absolute_uri(reverse('authenticate'))
         args = {
             'grant_type': 'authorization_code',
-            'code': token,
+            'code': code,
             'client_id': settings.WA_CLIENT_ID,
-            'redirect_uri': request.build_absolute_uri(reverse('authenticate')),
+            'redirect_uri': redirect_uri,
             'scope': settings.WA_SCOPE,
         }
 

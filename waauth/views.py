@@ -26,7 +26,8 @@ def authenticate_view(request):
     }
     
     if code != None:
-        user = authenticate(token=code, request=request)
+        redirect_uri = request.GET.get('redirect_uri')
+        user = authenticate(request=request, code=code, redirect_uri=redirect_uri)
         
         if user != None:
             login(request, user)

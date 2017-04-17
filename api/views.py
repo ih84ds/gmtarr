@@ -1,5 +1,7 @@
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout, authenticate
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 
 from rest_framework_jwt.settings import api_settings
@@ -24,10 +26,21 @@ def index(request):
 def welcome(request):
     return Response({ 'msg': 'Hi. Welcome to the GMTA Round Robin API server.' })
 
-@login_required()
 @api_view(['GET'])
-@permission_classes((IsAuthenticated, ))
+@permission_classes((AllowAny, ))
 def auth_token(request, *args, **kwargs):
+    code = request.GET.get('code')
+    redirect_uri = request.GET.get('redirect_uri')
+    
+    if code and redirect_uri:
+        user = authenticate(request=request, code=code, redirect_uri=redirect_uri)
+        if user != None:
+            login(request, user)
+        else:
+            raise PermissionDenied
+    else:
+        raise Exception('code and redirect_uri parameters are required!')
+
     jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
     jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
