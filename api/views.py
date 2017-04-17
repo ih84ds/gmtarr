@@ -1,13 +1,13 @@
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 
 from rest_framework_jwt.settings import api_settings
 from rest_framework import status
 from rest_framework.compat import is_authenticated
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
@@ -34,17 +34,15 @@ def auth_token(request, *args, **kwargs):
     
     if code and redirect_uri:
         user = authenticate(request=request, code=code, redirect_uri=redirect_uri)
-        if user != None:
-            login(request, user)
-        else:
+        if not user:
             raise PermissionDenied
     else:
-        raise Exception('code and redirect_uri parameters are required!')
+        raise AuthenticationFailed('code and redirect_uri parameters are required!')
 
     jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
     jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 
-    payload = jwt_payload_handler(request.user)
+    payload = jwt_payload_handler(user)
     token = jwt_encode_handler(payload)
     data = {
         'token': token
