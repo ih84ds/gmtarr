@@ -4,7 +4,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import redirect
 
 from rest_framework_jwt.settings import api_settings
-from rest_framework import status
+from rest_framework import generics, status, views
 from rest_framework.compat import is_authenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
@@ -16,7 +16,6 @@ from waauth import utils
 from api.models import *
 from api.permissions import IsAdminUserOrReadOnly, IsAdminUserOrReadOnlyAuthenticated
 from api.serializers import *
-from rest_framework import generics
 
 def index(request):
     return redirect('welcome')
@@ -29,6 +28,13 @@ def welcome(request):
 @api_view(['GET'])
 @permission_classes((AllowAny, ))
 def auth_token(request, *args, **kwargs):
+    """Authenticates a user using an access code retrieved from WA OAuth Login.
+
+    #### Required Query Parameters
+
+    * code: the code retruned from WA OAuth Login page after redirecting back to the client.
+    * reirect_uri: the redirect_uri parameter that was passed to WA login when the code was retrieved.
+    """
     code = request.GET.get('code')
     redirect_uri = request.GET.get('redirect_uri')
     
