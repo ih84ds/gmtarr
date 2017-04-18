@@ -13,9 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from django.contrib.auth.decorators import login_required
 from django.conf.urls import include, url
 from django.contrib import admin
 import api.views
+
+# This allows us to ensure we are already logged in via waauth
+# before hitting the admin login page.
+admin.site.login = login_required(admin.site.login)
 
 urlpatterns = [
     url(r'^api/', include('api.urls')),

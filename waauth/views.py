@@ -33,7 +33,11 @@ def authenticate_view(request):
             login(request, user)
             return_uri = request.session.get('wa_return_uri')
             if return_uri is None:
-                return HttpResponseRedirect('/')
+                referer = request.META.get('HTTP_REFERER')
+                if referer:
+                    return HttpResponseRedirect(referer)
+                else:
+                    return HttpResponseRedirect('/')
             else:
                 del request.session['wa_return_uri']
                 return HttpResponseRedirect(return_uri)
@@ -42,7 +46,6 @@ def authenticate_view(request):
             raise PermissionDenied
     else:
         request.session['wa_return_uri'] = request.GET.get('next')
-        
         return HttpResponseRedirect('{}?{}'.format(settings.WA_OAUTH_LOGIN_URL, urllib.parse.urlencode(args)))
 
 def register_view(request):
