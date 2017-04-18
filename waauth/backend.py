@@ -5,12 +5,13 @@ import requests, base64
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.contrib.auth.backends import ModelBackend
 
 # Custom
 from waauth.models import WAUser
 import waauth.utils as utils
 
-class WAAuthBackend:
+class WAAuthBackend(ModelBackend):
     def authenticate(self, request=None, code=None, redirect_uri=None):
         """Authenticates a user using an access code retrieved from WA OAuth Login.
 
