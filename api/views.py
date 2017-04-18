@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import redirect
+from django.db.models import Q
 
 from rest_framework_jwt.settings import api_settings
 from rest_framework import generics, status, views
@@ -14,7 +15,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 # Custom
 from waauth import utils
 from api.models import *
-from api.permissions import IsAdminUserOrReadOnly, IsAdminUserOrReadOnlyAuthenticated
+from api.permissions import IsAdminUserOrReadOnly, IsAdminUserOrReadOnlyAuthenticated, IsAdminUserOrMatchPlayerOrReadOnly
 from api.serializers import *
 
 def index(request):
@@ -106,7 +107,7 @@ class LeagueRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     """Gets details for the specified League."""
     queryset = League.objects.all()
     serializer_class = LeagueSerializer
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAdminUserOrReadOnly,)
 
 class LeagueFlightList(generics.ListAPIView):
     """Gets list of all Flights in the given League."""
@@ -153,8 +154,9 @@ class LeaguePlayerList(generics.ListAPIView):
 
     def get_serializer_class(self):
         user = self.request.user
-        is_in_league = is_authenticated(user) and self.get_league_queryset().filter(players__user=user).exists()
-        if is_in_league or user.is_staff:
+        # is_in_league = is_authenticated(user) and self.get_league_queryset().filter(players__user=user).exists()
+        if user.is_staff:
+            # include contact info
             return PlayerSerializer
         else:
             return PlayerPublicSerializer
@@ -208,6 +210,7 @@ class FlightPlayerList(generics.ListAPIView):
         user = self.request.user
         is_in_flight = is_authenticated(user) and self.get_flight_queryset().filter(players__user=user).exists()
         if is_in_flight or user.is_staff:
+            # include contact info
             return PlayerSerializer
         else:
             return PlayerPublicSerializer
@@ -285,9 +288,17 @@ class PlayerDestroy(generics.DestroyAPIView):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
 
-# Match Views
-class MatchRetrieve(generics.RetrieveAPIView):
-    """Gets info for specified Match."""
-    permission_classes = (AllowAny,)
+class MatchRetrieveUpdate(generics.RetrieveUpdateAPIView):
+    """Gets or Updates info for specified Match.
+
+    If user is non-admin, only that user's matches can be updated
+    """
     queryset = Match.objects.all()
-    serializer_class = MatchPublicSerializer
+    serializer_class = MatchPlayerSerializer
+    permission_classes = (IsAdminUserOrMatchPlayerOrReadOnly,)
+
+    def get_serializer_class(self):
+        # user = self.request.user
+        # is_match_player = is_authenticated(user) and self.get_queryset().filter(Q(home_player__user=user) | Q(visitor_player__user=user)).exists()
+        # TODO: add Match Admin Serializer so admins can edit more stuff
+        return MatchPlayerSerializer

@@ -37,7 +37,7 @@ urlpatterns = [
     url(r'^players/(?P<pk>[0-9]+)/delete$', views.PlayerDestroy.as_view(), name='player_destroy'),
 
     # Match Routes
-    url(r'^matches/(?P<pk>[0-9]+)$', views.MatchRetrieve.as_view(), name='match_retrieve'),
+    url(r'^matches/(?P<pk>[0-9]+)$', views.MatchRetrieveUpdate.as_view(), name='match_retrieve_update'),
 
     # WA Info Routes
     # url(r'^event-registrants/(?P<event_id>[0-9]+)$', views.event_registrants, name='event_registrants'),
