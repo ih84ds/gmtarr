@@ -72,10 +72,20 @@ class Match(models.Model):
         (VISITOR, 'visitor'),
         (DBL_DEFAULT, 'double default'),
     )
+    COMPLETED = 'completed'
+    RETIRED = 'retired'
+    DEFAULT = 'default'
+    TIMED_MATCH = 'timed match'
+    Statuses = (
+        (COMPLETED, 'completed'),
+        (RETIRED, 'retired'),
+        (DEFAULT, 'default'),
+        (TIMED_MATCH, 'timed match'),
+    )
 
     flight = models.ForeignKey(Flight, related_name='matches', on_delete=models.CASCADE)
     year = models.IntegerField(db_index=True)
-    status = models.CharField(max_length=63, blank=True, null=True)
+    status = models.CharField(max_length=63, choices=Statuses, blank=True, null=True)
     home_player = models.ForeignKey(Player, related_name='home_matches', on_delete=models.CASCADE)
     visitor_player = models.ForeignKey(Player, related_name='visitor_matches', on_delete=models.CASCADE)
     score = models.CharField(max_length=63, blank=True, null=True)

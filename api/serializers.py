@@ -46,5 +46,5 @@ class MatchPlayerSerializer(serializers.ModelSerializer):
         model = Match
         fields = ('id', 'flight', 'year', 'status', 'home_player', 'visitor_player', 'score', 'winner', 'scheduled_date', 'played_date', 'entry_date')
         # writable_fields is just a convenience for calculating read_only_fields based on the difference.
-        writable_fields = ('score', 'winner', 'played_date')
+        writable_fields = ('status', 'score', 'winner', 'played_date')
         read_only_fields = tuple(set(fields) - set(writable_fields))
