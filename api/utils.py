@@ -1,4 +1,5 @@
-import datetime, json, re
+import datetime, json, math, re
+from django.utils import timezone
 from waauth import utils as wautils
 from api.models import *
 
@@ -36,6 +37,17 @@ def format_phone(phone, format='{}-{}-{}'):
     if m:
         phone = format.format(m.group(1), m.group(3), m.group(5))
     return phone
+
+def format_set_score(score):
+    set_regex = re.compile('^\s*([0-9]+)\s*-\s*([0-9]+)\s*(?:\(([0-9]+)\)\s*)?$')
+    m = set_regex.match(score)
+    if not m:
+        raise Exception('undecipherable set score: {}'.format(score))
+    if m.group(3):
+        score = '{}-{}({})'.format(m.group(1), m.group(2), m.group(3))
+    else:
+        score = '{}-{}'.format(m.group(1), m.group(2))
+    return score
 
 def generate_matches_for_flight(flight, match_timedelta=None):
     players = list(flight.players.all())
@@ -87,3 +99,50 @@ def import_players_for_event(event_id, league_name=None):
         p.save()
         players.append(p)
     return players
+
+def is_valid_score(score, best_of=1, set_games=10):
+    # normalize score string so we don't have to over-complicate our regexes
+    score = normalize_score(score)
+    match_regex = re.compile('[0-9]+-[0-9]+(?:\([0-9]+\))?')
+    set_regex = re.compile('([0-9]+)-([0-9]+)(?:\(([0-9]+)\))?')
+    sets = match_regex.findall(score)
+    min_sets = math.ceil(best_of / 2)
+    max_sets = best_of
+    if len(sets) < min_sets or len(sets) > max_sets:
+        # wrong number of sets
+        raise Exception('wrong number of sets: {}'.format(len(sets)))
+    winner_sets_won = 0
+    for set in sets:
+        m = set_regex.match(set)
+        match_winner_score = int(m.group(1))
+        match_loser_score = int(m.group(2))
+        set_winner_score = max(match_winner_score, match_loser_score)
+        set_loser_score = min(match_winner_score, match_loser_score)
+        if set_winner_score == match_winner_score:
+            winner_sets_won += 1
+        if set_winner_score > (set_games + 1) or (set_winner_score > set_games and set_loser_score < (set_games - 1)):
+            # too many games played
+            raise Exception('too many games played: {}'.format(set))
+        if set_winner_score < set_games:
+            # too few games played
+            raise Exception('not enough games played: {}'.format(set))
+        if not (set_winner_score >= (set_loser_score + 2) or (set_loser_score == set_games and set_winner_score == (set_games + 1))):
+            # must win by 2 or win by 1 (tiebreaker) if max games were played
+            raise Exception('must win by two: {}'.format(set))
+        if m.group(3) is not None and not (set_winner_score == (set_games + 1) and set_loser_score == set_games):
+            # can't have tiebreaker if max games were not played
+            raise Exception('tiebreaker score entered for non-tiebreaker set: {}'.format(set))
+    if winner_sets_won < min_sets:
+        # winner didn't win minimum number of sets
+        raise Exception('match winner did not win enough sets: {}'.format(score))
+    return True
+
+def normalize_score(score):
+    sets = score.split(',')
+    normalized_sets = []
+    for set in sets:
+        normalized_sets.append(format_set_score(set))
+    return ', '.join(normalized_sets)
+
+def today():
+    return timezone.now().date()
