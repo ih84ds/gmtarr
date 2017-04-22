@@ -145,4 +145,4 @@ def normalize_score(score):
     return ', '.join(normalized_sets)
 
 def today():
-    return timezone.now().date()
+    return timezone.localdate()
