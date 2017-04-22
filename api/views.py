@@ -1,3 +1,5 @@
+from operator import itemgetter
+
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
@@ -8,12 +10,12 @@ from rest_framework_jwt.settings import api_settings
 from rest_framework import generics, status, views
 from rest_framework.compat import is_authenticated
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
+from rest_framework.exceptions import AuthenticationFailed, PermissionDenied, NotFound
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 # Custom
-from waauth import utils
+from waauth import utils as wautils
 from api.models import *
 from api.permissions import IsAdminUserOrReadOnly, IsAdminUserOrReadOnlyAuthenticated, IsAdminUserOrMatchPlayerOrReadOnly
 from api.serializers import *
@@ -61,12 +63,12 @@ def auth_token(request, *args, **kwargs):
 def event_registrants(request, event_id):
     # this is somewhat hacky as it requests a new token every time
     # FIXME: api auth token in session and refresh as necessary?
-    token = utils.get_api_auth_token()
+    token = wautils.get_api_auth_token()
     access_token = token['access_token']
-    events = utils.get_rr_events(access_token)
+    events = wautils.get_rr_events(access_token)
     first_event = events[0]
     event_id = first_event['Id']
-    registrants = utils.get_rr_event_registrants(access_token, event_id)
+    registrants = wautils.get_rr_event_registrants(access_token, event_id)
     return Response(registrants)
 
 # User Info Views
@@ -236,6 +238,29 @@ class FlightMatchList(generics.ListAPIView):
             return None
         q = Match.objects.filter(flight=flight)
         return q
+
+@api_view(['GET'])
+@permission_classes((AllowAny, ))
+def flight_standings(request, flight_id):
+    try:
+        flight = Flight.objects.get(pk=flight_id)
+    except Flight.DoesNotExist:
+        raise NotFound()
+    data = []
+    for p in flight.players.all():
+        match_record = p.get_record()
+        games_record = p.get_games_record()
+        data.append({
+            'player_id': p.id,
+            'name': p.name,
+            'wins': match_record[0],
+            'losses': match_record[1],
+            'ties': match_record[2] or 0,
+            'game_wins': games_record[0],
+            'game_losses': games_record[1],
+        })
+    data = sorted(data, key=itemgetter('wins', 'game_wins'), reverse=True)
+    return Response(data)
 
 # Player Views
 class PlayerListCreate(generics.ListCreateAPIView):

@@ -1,5 +1,7 @@
+import re
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 class League(models.Model):
     """Used to group all players who signed up for a Round Robin event/season.
@@ -60,6 +62,46 @@ class Player(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_games_record(self):
+        wins = 0
+        losses = 0
+        for match in self.matches():
+            if not match.status:
+                continue
+            is_winner = match.player_is_winner(self)
+            for s in match.get_parsed_score():
+                if is_winner is None:
+                    wins += s[0]
+                    losses += s[1]
+                elif is_winner:
+                    wins += s[0]
+                    losses += s[1]
+                else:
+                    losses += s[0]
+                    wins += s[1]
+        record = [str(wins), str(losses)]
+        return record
+
+    def get_record(self):
+        wins = 0
+        losses = 0
+        ties = 0
+        for match in self.matches():
+            if not match.status:
+                continue
+            is_winner = match.player_is_winner(self)
+            if is_winner is None:
+                ties += 1
+            elif is_winner:
+                wins += 1
+            else:
+                losses += 1
+        record = [str(wins), str(losses), str(ties)]
+        return record
+
+    def matches(self):
+        return Match.objects.filter(Q(home_player=self) | Q(visitor_player=self))
 
 class Match(models.Model):
     """Represents a single match between two players in the same flight.
