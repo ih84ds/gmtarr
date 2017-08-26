@@ -69,6 +69,13 @@ def get_rr_events(token):
         events = None
     return events
 
+def get_rr_event_info(token, event_id):
+    api_path = 'Accounts/{}/Events/{}'.format(settings.WA_ACCOUNT_ID, event_id)
+    args = {
+    }
+    data = api_call_get(api_path, token, args=args)
+    return data
+
 def get_rr_event_registrants(token, event_id, normalize=True):
     api_path = 'Accounts/{}/EventRegistrations'.format(settings.WA_ACCOUNT_ID)
     args = {

@@ -71,5 +71,8 @@ urlpatterns = [
     url(r'^matches/(?P<pk>[0-9]+)$', views.MatchRetrieveUpdate.as_view(), name='match_retrieve_update'),
 
     # WA Info Routes
-    # url(r'^event-registrants/(?P<event_id>[0-9]+)$', views.event_registrants, name='event_registrants'),
+    url(r'^events$', views.events, name='events'),
+    url(r'^events/(?P<event_id>[0-9]+)$', views.event_info, name='event_info'),
+    url(r'^events/(?P<event_id>[0-9]+)/registrants$', views.event_registrants, name='event_registrants'),
+    url(r'^events/(?P<event_id>[0-9]+)/create-league$', views.event_create_league, name='event_create_league'),
 ]

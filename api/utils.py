@@ -31,6 +31,22 @@ def create_balanced_round_robin(players):
         map = map[mid:-1] + map[:mid] + map[-1:]
     return s
 
+def create_league_for_event(token, event_id):
+    try:
+        league = League.objects.get(event_id=event_id)
+        raise Exception('League "{}" already exists for event {}.'.format(league.name, event_id))
+    except League.DoesNotExist as e:
+        event = wautils.get_rr_event_info(token, event_id)
+        league = League(event_id=event_id)
+        league.year = datetime.date.today().year
+        if event['Name']:
+            league.name = event['Name']
+        else:
+            league.name = 'League for Event {}'.format(event_id)
+        league.save()
+
+    return league
+
 def format_phone(phone, format='{}-{}-{}'):
     nanp = re.compile('([2-9][0-9]{2})([^0-9]*)([2-9][0-9]{2})([^0-9]*)([0-9]{4})')
     m = nanp.match(phone)
@@ -70,24 +86,12 @@ def generate_matches_for_flight(flight, match_timedelta=None):
         if match_date:
             match_date += match_timedelta
 
-def import_players_for_event(event_id, league_name=None):
-    try:
-        league = League.objects.get(event_id=event_id)
-    except League.DoesNotExist as e:
-        league = League(event_id=event_id)
-        league.year = datetime.date.today().year
-        if league_name is None:
-            league.name = 'League for Event {}'.format(event_id)
-        else:
-            league.name = league_name
-        league.save()
+def import_players_for_event(token, league, event_id):
+    registrants = wautils.get_rr_event_registrants(token, event_id)
 
-    token = wautils.get_api_auth_token()
-    access_token = token['access_token']
-    registrants = wautils.get_rr_event_registrants(access_token, event_id)
     players = []
     for r in registrants:
-        wa_user = wautils.get_wa_user_for_account(r['contact_id'], token=access_token, create=True)
+        wa_user = wautils.get_wa_user_for_account(r['contact_id'], token=token, create=True)
         p = Player()
         p.name = '{} {}'.format(r['first_name'], r['last_name'])
         p.email = r['email']

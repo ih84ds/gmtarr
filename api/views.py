@@ -60,16 +60,44 @@ def auth_token(request, *args, **kwargs):
 
 @api_view(['GET'])
 @permission_classes((IsAdminUser, ))
+def event_info(request, event_id):
+    # this is somewhat hacky as it requests a new token every time
+    # FIXME: api auth token in session and refresh as necessary?
+    token = wautils.get_api_auth_token()
+    access_token = token['access_token']
+    event = wautils.get_rr_event_info(access_token, event_id)
+    return Response(event)
+
+@api_view(['GET'])
+@permission_classes((IsAdminUser, ))
+def event_create_league(request, event_id):
+    # this is somewhat hacky as it requests a new token every time
+    # FIXME: api auth token in session and refresh as necessary?
+    token = wautils.get_api_auth_token()
+    access_token = token['access_token']
+    league = utils.create_league_for_event(access_token, event_id)
+    players = utils.import_players_for_event(access_token, league, event_id)
+    return redirect('league_retrieve_update_destroy', pk=league.id)
+
+@api_view(['GET'])
+@permission_classes((IsAdminUser, ))
 def event_registrants(request, event_id):
     # this is somewhat hacky as it requests a new token every time
     # FIXME: api auth token in session and refresh as necessary?
     token = wautils.get_api_auth_token()
     access_token = token['access_token']
-    events = wautils.get_rr_events(access_token)
-    first_event = events[0]
-    event_id = first_event['Id']
     registrants = wautils.get_rr_event_registrants(access_token, event_id)
     return Response(registrants)
+
+@api_view(['GET'])
+@permission_classes((IsAdminUser, ))
+def events(request):
+    # this is somewhat hacky as it requests a new token every time
+    # FIXME: api auth token in session and refresh as necessary?
+    token = wautils.get_api_auth_token()
+    access_token = token['access_token']
+    events = wautils.get_rr_events(access_token)
+    return Response(events)
 
 # User Info Views
 @api_view(['GET'])
