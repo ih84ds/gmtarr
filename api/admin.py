@@ -22,7 +22,7 @@ class PlayerAdmin(admin.ModelAdmin):
 
     class FlightForm(forms.Form):
         _selected_action = forms.CharField(widget=forms.MultipleHiddenInput)
-        flight = forms.ModelChoiceField(Flight.objects)           
+        flight = forms.ModelChoiceField(Flight.objects)
 
     def set_flight(self, request, queryset):
         form = self.FlightForm(request.POST)
