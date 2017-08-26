@@ -99,6 +99,16 @@ def events(request):
     events = wautils.get_rr_events(access_token)
     return Response(events)
 
+@api_view(['GET'])
+@permission_classes((IsAdminUser, ))
+def flight_generate_schedule(request, flight_id):
+    try:
+        flight = Flight.objects.get(pk=flight_id)
+    except Flight.DoesNotExist:
+        raise NotFound()
+    utils.generate_matches_for_flight(flight)
+    return redirect('flight_match_list', flight_id=flight_id)
+
 # User Info Views
 @api_view(['GET'])
 @permission_classes((IsAuthenticated, ))

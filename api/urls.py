@@ -60,6 +60,7 @@ urlpatterns = [
     url(r'^flights/(?P<flight_id>[0-9]+)/players$', views.FlightPlayerList.as_view(), name='flight_player_list'),
     url(r'^flights/(?P<flight_id>[0-9]+)/matches$', views.FlightMatchList.as_view(), name='flight_match_list'),
     url(r'^flights/(?P<flight_id>[0-9]+)/standings$', views.flight_standings, name='flight_standings'),
+    url(r'^flights/(?P<flight_id>[0-9]+)/generate-schedule$', views.flight_generate_schedule, name='flight_generate_schedule'),
 
     # Player Routes
     url(r'^players$', views.PlayerListCreate.as_view(), name='player_list_create'),
