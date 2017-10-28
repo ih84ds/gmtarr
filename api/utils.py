@@ -58,7 +58,7 @@ def format_set_score(score):
     set_regex = re.compile('^\s*([0-9]+)\s*-\s*([0-9]+)\s*(?:\(([0-9]+)\)\s*)?$')
     m = set_regex.match(score)
     if not m:
-        raise Exception('undecipherable set score: {}'.format(score))
+        raise Exception('indecipherable set score: {}'.format(score))
     if m.group(3):
         score = '{}-{}({})'.format(m.group(1), m.group(2), m.group(3))
     else:
