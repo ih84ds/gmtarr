@@ -6,11 +6,11 @@ services:
       # use persistent volume on host
       - "/app/mysqldata:/var/lib/mysql"
   django:
-    build: django
+    build: ../backend
     # use uwsgi for prod
     command: "uwsgi --socket :8001 --module roundrobin.wsgi"
-    volumes:
-      - "..:/usr/src/app"
+    # volumes:
+    #   - "../backend:/usr/src/app"
     depends_on:
       - db
   # use nginx server for prod

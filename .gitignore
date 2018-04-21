@@ -1,12 +1,13 @@
 # site specific settings
-/roundrobin/settings_local.py
+/docker/local-settings.env
+/kubernetes/*-secrets.yaml
 
 # https certificate/key
 /docker/nginx/ssl/server.cert
 /docker/nginx/ssl/server.key
 
 # admin static files
-/static/
+/backend/static/
 
 *.py[co]
 __pycache__

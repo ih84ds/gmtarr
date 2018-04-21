@@ -4,12 +4,13 @@ services:
     image: "mysql:5.7"
     ports:
       - "3306:3306"
-    environment:
-      # Find the password on stdout when mysql_data volume is first created.
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    env_file:
+      - ./local-settings.env
   django:
-    build: django
-    volumes:
-      - "..:/usr/src/app"
+    build: ../backend
+    # volumes:
+    #   - "../backend:/usr/src/app"
     depends_on:
       - db
+    env_file:
+      - ./local-settings.env

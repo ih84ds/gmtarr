@@ -7,12 +7,12 @@ services:
     volumes:
       - "mysql_data:/var/lib/mysql"
   django:
-    build: django
+    build: ../backend
     # use django builtin server for dev
     ports:
       - "8000:8000"
-    volumes:
-      - "..:/usr/src/app"
+    # volumes:
+    #   - "../backend:/usr/src/app"
     depends_on:
       - db
 volumes:
