@@ -19,9 +19,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = os.environ.get('DJANGO_DEBUG') == 'true'
+env_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS')
+if env_hosts:
+    ALLOWED_HOSTS = env_hosts.split(',')
+else:
+    ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -71,21 +74,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'roundrobin.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
-# Override this in settings_local.py
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'roundrobin',
-        'USER': 'root',
-        'HOST': 'db',
-        'PORT': 3306,
-    }
-}
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -194,5 +182,28 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
-# Import local settings. Put passwords in there.
-from .settings_local import *
+# Pull secret settings from environment variables
+CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+CORS_ORIGIN_WHITELIST = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get('DJANGO_SECRET', 'pleasesetthisinyourenvironment')
+
+# Database
+# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DJANGO_DB_NAME', 'roundrobin'),
+        'USER': os.environ.get('DJANGO_DB_USER', 'root'),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASS'),
+        'HOST': os.environ.get('DJANGO_DB_HOST', 'db'),
+        'PORT': os.environ.get('DJANGO_DB_PORT', '3306'),
+    }
+}
+
+WA_CLIENT_SECRET = os.environ.get('WA_CLIENT_SECRET')
+WA_API_KEY = os.environ.get('WA_API_KEY')
+WA_ACCOUNT_ID = os.environ.get('WA_ACCOUNT_ID')
+

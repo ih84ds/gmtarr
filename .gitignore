@@ -1,5 +1,5 @@
 # site specific settings
-/roundrobin/settings_local.py
+/docker/local-settings.env
 
 # https certificate/key
 /docker/nginx/ssl/server.cert
