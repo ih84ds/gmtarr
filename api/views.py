@@ -274,7 +274,7 @@ class FlightMatchList(generics.ListAPIView):
         flight = self.get_flight()
         if not flight:
             return None
-        q = Match.objects.filter(flight=flight).order_by('scheduled_date')
+        q = Match.objects.filter(flight=flight)
         return q
 
 @api_view(['GET'])

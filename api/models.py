@@ -16,6 +16,9 @@ class League(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ['year', 'name', 'id']
+
     def __str__(self):
         return self.name    
 
@@ -29,6 +32,9 @@ class Flight(models.Model):
     start_date = models.DateField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['year', 'name', 'id']
 
     def __str__(self):
         return self.name
@@ -59,6 +65,9 @@ class Player(models.Model):
     league = models.ForeignKey(League, related_name='players', on_delete=models.CASCADE, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['name', 'id']
 
     def __str__(self):
         return self.name
@@ -137,6 +146,9 @@ class Match(models.Model):
     entry_date = models.DateField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['scheduled_date', 'id']
 
     @classmethod
     def get_winner_from_string(cls, winner_str):
