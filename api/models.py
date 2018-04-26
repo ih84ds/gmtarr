@@ -17,7 +17,7 @@ class League(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['year', 'name', 'id']
+        ordering = ['-year', 'name', 'id']
 
     def __str__(self):
         return self.name    
@@ -34,7 +34,7 @@ class Flight(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['year', 'name', 'id']
+        ordering = ['-year', 'name', 'id']
 
     def __str__(self):
         return self.name
