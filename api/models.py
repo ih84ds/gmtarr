@@ -79,6 +79,9 @@ class Player(models.Model):
             if not match.status:
                 continue
             is_winner = match.player_is_winner(self)
+            score_array = match.get_parsed_score()
+            if score_array is None:
+                continue
             for s in match.get_parsed_score():
                 if is_winner is None:
                     wins += s[0]
