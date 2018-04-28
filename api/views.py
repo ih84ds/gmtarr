@@ -297,7 +297,7 @@ def flight_standings(request, flight_id):
             'game_wins': games_record[0],
             'game_losses': games_record[1],
         })
-    data = sorted(data, key=itemgetter('wins', 'game_wins'), reverse=True)
+    data = sorted(data, key=itemgetter('wins', 'game_wins', 'ties'), reverse=True)
     return Response(data)
 
 # Player Views
