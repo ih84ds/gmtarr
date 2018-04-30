@@ -286,18 +286,24 @@ def flight_standings(request, flight_id):
         raise NotFound()
     data = []
     for p in flight.players.all():
-        match_record = p.get_record()
-        games_record = p.get_games_record()
+        (wins, losses, ties) = p.get_record()
+        (game_wins, game_losses) = p.get_games_record()
+        matches_played = int(wins) + int(losses)
+        games_played = int(game_wins) + int(game_losses)
+        win_percentage = 100 * int(wins) / matches_played if matches_played > 0 else 0
+        game_win_percentage = 100 * int(game_wins) / games_played if games_played > 0 else 0
         data.append({
             'player_id': p.id,
             'name': p.name,
-            'wins': match_record[0],
-            'losses': match_record[1],
-            'ties': match_record[2] or 0,
-            'game_wins': games_record[0],
-            'game_losses': games_record[1],
+            'wins': wins,
+            'losses': losses,
+            'ties': ties,
+            'game_wins': game_wins,
+            'game_losses': game_losses,
+            'win_percentage': round(win_percentage, 2),
+            'game_win_percentage': round(game_win_percentage, 2),
         })
-    data = sorted(data, key=itemgetter('wins', 'game_wins', 'ties'), reverse=True)
+    data = sorted(data, key=itemgetter('win_percentage', 'game_win_percentage', 'wins', 'game_wins', 'ties'), reverse=True)
     return Response(data)
 
 # Player Views
