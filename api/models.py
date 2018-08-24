@@ -37,7 +37,7 @@ class Flight(models.Model):
         ordering = ['-year', 'name', 'id']
 
     def __str__(self):
-        return self.name
+        return u'{} ({})'.format(self.name, self.league)
 
 class Player(models.Model):
     """Represents a player in a league/flight.
