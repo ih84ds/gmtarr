@@ -1,0 +1,10 @@
+{
+    "production": {
+        "django_settings": "roundrobin.settings",
+        "profile_name": null,
+        "project_name": "app",
+        "runtime": "python3.6",
+        "aws_region": "us-east-1",
+        "s3_bucket": "gmtarr-zappa-prod"
+    }
+}

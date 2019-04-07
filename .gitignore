@@ -8,5 +8,8 @@
 # admin static files
 /static/
 
+# virtualenv stuff
+/venv/
+
 *.py[co]
 __pycache__
