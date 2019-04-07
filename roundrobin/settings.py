@@ -125,9 +125,9 @@ WA_TOKEN_URL = 'https://oauth.wildapricot.org/auth/token'
 WA_JOIN_URL = 'https://www.gmtatennis.org/join-us'
 WA_CLIENT_ID = 'roundrobin'
 WA_SCOPE = 'contacts_me'
-WA_CLIENT_SECRET = '' # set in settings_local
-WA_API_KEY = '' # set in settings_local
-WA_ACCOUNT_ID = '' # set in settings_local
+WA_CLIENT_SECRET = os.environ.get('WA_CLIENT_SECRET')
+WA_API_KEY = os.environ.get('WA_API_KEY')
+WA_ACCOUNT_ID = os.environ.get('WA_ACCOUNT_ID')
 
 JWT_AUTH = {
     'JWT_ALGORITHM': 'HS256',
@@ -211,8 +211,3 @@ DATABASES = {
         'PORT': os.environ.get('DJANGO_DB_PORT', '3306'),
     }
 }
-
-WA_CLIENT_SECRET = os.environ.get('WA_CLIENT_SECRET')
-WA_API_KEY = os.environ.get('WA_API_KEY')
-WA_ACCOUNT_ID = os.environ.get('WA_ACCOUNT_ID')
-
