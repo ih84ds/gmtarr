@@ -10,7 +10,11 @@ services:
     build: django
     volumes:
       - "..:/usr/src/app"
+      - "virtualenv:/usr/src/app/venv"
     depends_on:
       - db
     env_file:
       - ./local-settings.env
+
+volumes:
+  virtualenv:
