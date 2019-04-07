@@ -1,6 +1,0 @@
-[submodule "frontend"]
-	path = frontend
-	url = https://github.com/timothynott/gmtarr-front-end-static.git
-[submodule "frontend-vue"]
-	path = frontend-vue
-	url = https://github.com/ih84ds/gmtarr-frontend-vue.git
