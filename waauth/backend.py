@@ -1,5 +1,6 @@
 # Python
 import requests, base64
+import logging
 
 # Django
 from django.conf import settings
@@ -10,6 +11,8 @@ from django.contrib.auth.backends import ModelBackend
 # Custom
 from waauth.models import WAUser
 import waauth.utils as utils
+
+logger = logging.getLogger(__name__)
 
 class WAAuthBackend(ModelBackend):
     def authenticate(self, request=None, code=None, redirect_uri=None):

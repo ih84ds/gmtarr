@@ -2,6 +2,7 @@ from django.shortcuts import render
 
 # Python
 import urllib, json
+import logging
 
 # Django
 from django.shortcuts import render_to_response
@@ -16,6 +17,8 @@ from django.contrib.auth.models import User
 # Custom
 from . import utils
 from waauth.models import WAUser
+
+logger = logging.getLogger(__name__)
 
 def authenticate_view(request):
     code = request.GET.get('code')
