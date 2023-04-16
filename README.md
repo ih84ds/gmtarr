@@ -12,7 +12,7 @@ To get things working, the following local/private files need to be created:
 * log in at https://gmtarr-api.rrish.org/admin/
 * find event number at https://gmtarr-api.rrish.org/api/events
 * create league https://gmtarr-api.rrish.org/api/events/{event_id}/create-league
-* change name of league (add year prefix, etc.) https://gmtarr-api.rrish.org/admin/api/flight/
+* change name of league (add year prefix, etc.) https://gmtarr-api.rrish.org/admin/api/league/
 * go to admin and filter players by league, gender, level...
 * figure out how many flights are needed at each gender/level and create them https://gmtarr-api.rrish.org/admin/api/flight/
   * no more than 10 players per flight
@@ -27,7 +27,7 @@ To get things working, the following local/private files need to be created:
 * export registrants from Wild Apricot's Event admin
 * go to Audience Dashboard and select Import Contacts
 * updload the exported CSV
-* import to "Current Members", Subscribed
+* In Mailchimp, import to "Current Members", Subscribed
   * make sure to check the box for UPDATE EXISTING or else the new tag won't get applied to existing contacts
 * add a tag for the round robin, e.g. `rr-2022-fall`
 * make sure first name, last name, and email fields are properly mapped
