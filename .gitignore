@@ -11,6 +11,9 @@
 # virtualenv stuff
 /venv/
 
+# Firebase cache
+.firebase/
+
 *.py[co]
 __pycache__
 

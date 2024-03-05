@@ -1,0 +1,11 @@
+{
+  "hosting": {
+    "site": "gmtarr-backend",
+    "public": "static",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}

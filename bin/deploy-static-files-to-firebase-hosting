@@ -1,0 +1,24 @@
+#!/bin/bash
+
+SCRIPT_PATH=$(readlink -f "$0")
+BINDIR=$(dirname $SCRIPT_PATH)
+BASEDIR=$(dirname $BINDIR)
+
+# bootstrap procedure:
+#   * firebase login --no-localhost
+dotconfig_vol="rrish_dotconfig"
+
+firebase () {
+  docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" -v "$dotconfig_vol:/home/node/.config" andreysenov/firebase-tools:13.3.1 firebase "$@"
+}
+
+manage () {
+  docker compose -f "${BASEDIR}/docker/docker-compose.yml" run --rm django python manage.py "$@"
+}
+
+### MAIN ###
+
+cd $BASEDIR
+
+manage collectstatic --noinput
+firebase deploy --only hosting:gmtarr-backend
