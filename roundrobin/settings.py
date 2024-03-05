@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_s3_storage',
 ]
 
 MIDDLEWARE = [
@@ -182,13 +181,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_S3_BUCKET = os.environ.get('STATIC_S3_BUCKET', 'gmtarr-static')
-STATICFILES_STORAGE = 'django_s3_storage.storage.StaticS3Storage'
-AWS_S3_BUCKET_NAME_STATIC = STATIC_S3_BUCKET
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % STATIC_S3_BUCKET
-STATIC_URL = 'https://%s/' % AWS_S3_CUSTOM_DOMAIN
-
-# STATIC_URL = '/static/'
+STATIC_URL = os.environ.get('DJANGO_STATIC_URL', '/static/')
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 # Pull secret settings from environment variables

@@ -1,7 +1,7 @@
 version: "2"
 services:
   db:
-    image: "mysql:5.7"
+    image: "mysql:8.0"
     ports:
       - "3306:3306"
     # store in persistent docker volume for dev
@@ -13,7 +13,6 @@ services:
     build: django
     volumes:
       - "..:/usr/src/app"
-      - "virtualenv:/usr/src/app/venv"
     ports:
       - "8000:8000"
     depends_on:
@@ -23,4 +22,3 @@ services:
 
 volumes:
   mysql_data:
-  virtualenv:
