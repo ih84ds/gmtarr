@@ -184,6 +184,9 @@ USE_TZ = True
 STATIC_URL = os.environ.get('DJANGO_STATIC_URL', '/static/')
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Pull secret settings from environment variables
 CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
 CORS_ORIGIN_WHITELIST = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
