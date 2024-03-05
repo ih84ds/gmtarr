@@ -10,7 +10,9 @@ services:
     env_file:
       - ./local-settings.env
   django:
-    build: django
+    build:
+      context: django
+      target: dev
     volumes:
       - "..:/usr/src/app"
     environment:
