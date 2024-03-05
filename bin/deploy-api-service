@@ -1,0 +1,22 @@
+#!/bin/bash
+
+SCRIPT_PATH=$(readlink -f "$0")
+BINDIR=$(dirname $SCRIPT_PATH)
+BASEDIR=$(dirname $BINDIR)
+
+gcloud() {
+  docker run --rm \
+    -v ftl_ftldotconfig:/root/.config \
+    -v "$(pwd):$(pwd)" \
+    -w "$(pwd)" \
+    "google/cloud-sdk:slim" \
+    gcloud "$@"
+}
+
+cd "$BASEDIR"
+
+SHORT_SHA=$(git rev-parse --short HEAD)
+
+gcloud builds submit . \
+  --project=gmtarr-frontend \
+  --substitutions="SHORT_SHA=$SHORT_SHA"

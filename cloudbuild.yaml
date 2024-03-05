@@ -1,0 +1,44 @@
+substitutions:
+  _ARTIFACT_REPO: gmtarr
+  _SERVICE_NAME: gmtarr-api
+
+steps:
+  - name: 'docker:20'
+    id: imagepull
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        # always exit with success status even if image doesn't exist (should fail on first build only)
+        docker pull "us-central1-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REPO/$_SERVICE_NAME:latest" || exit 0
+  - name: 'docker:20'
+    id: imagebuild
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        docker build \
+          -t "us-central1-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REPO/$_SERVICE_NAME:latest" \
+          -t "us-central1-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REPO/$_SERVICE_NAME:$SHORT_SHA" \
+          --cache-from "us-central1-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REPO/$_SERVICE_NAME:latest" \
+          .
+
+  - name: 'docker:20'
+    id: imagepush
+    args: ['push', '--all-tags', 'us-central1-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REPO/$_SERVICE_NAME']
+
+  # Deploy service.
+  - id: 'deploy'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        set -e
+
+        echo "Deploying $_SERVICE_NAME with tag $SHORT_SHA..."
+        gcloud run deploy $_SERVICE_NAME \
+          --image "us-central1-docker.pkg.dev/$PROJECT_ID/$_ARTIFACT_REPO/$_SERVICE_NAME:$SHORT_SHA" \
+          --platform managed \
+          --region us-central1 \
+          --allow-unauthenticated
