@@ -1,9 +1,5 @@
 # site specific settings
-/docker/local-settings.env
-
-# https certificate/key
-/docker/nginx/ssl/server.cert
-/docker/nginx/ssl/server.key
+/local-settings.env
 
 # admin static files
 /static/

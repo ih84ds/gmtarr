@@ -11,10 +11,10 @@ services:
       - ./local-settings.env
   django:
     build:
-      context: django
+      context: .
       target: dev
     volumes:
-      - "..:/usr/src/app"
+      - ".:/usr/src/app"
     environment:
       PORT: "8000"
     ports:
